@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design for Beginners</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Merriweather:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #388e3c;
+            --accent-color: #81c784;
+            --text-light: #ffffff;
+            --text-dark: #1b5e20;
+            --bg-light: #f1f8e9;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+        }
+
+        h3 {
+            font-size: 2.4rem;
+        }
+
+        h4 {
+            font-size: 1.8rem;
+        }
+
+        h5 {
+            font-size: 1.6rem;
+        }
+
+        h6 {
+            font-size: 1.4rem;
+        }
+
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-scrolled {
+            background-color: rgba(46, 125, 50, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            color: var(--text-light);
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -1px;
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            margin: 0 1rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .content-section {
+            padding: 8rem 0;
+        }
+
+        .section-heading {
+            font-size: 2.8rem;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+            text-align: center;
+            position: relative;
+        }
+
+        .section-heading::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--accent-color);
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        .topic-image {
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2.5rem;
+            width: 100%;
+            height: 400px;
+            /* Fixed height */
+            object-fit: cover;
+            /* Maintain aspect ratio */
+            transition: transform 0.3s ease;
+        }
+
+        .topic-image:hover {
+            transform: translateY(-8px);
+        }
+
+        .topic-content {
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            font-size: 1rem;
+            margin-top: 2rem;
+        }
+
+        .topic-content:hover {
+            transform: translateY(-4px);
+        }
+
+        .lead {
+            font-size: 1.2rem;
+        }
+
+        .action-button {
+            background-color: var(--accent-color);
+            color: var(--text-dark);
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 1.2rem;
+            box-shadow: 0 4px 12px rgba(129, 199, 132, 0.3);
+        }
+
+        .action-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(56, 142, 60, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .social-icon {
+            font-size: 1.5rem;
+            margin-left: 1rem;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="bi bi-diagram-3-fill me-2"></i>SystemDesign.io</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#scalability"><i
+                                class="bi bi-arrow-up-right-circle me-1"></i>Scalability</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#distributed"><i
+                                class="bi bi-diagram-2 me-1"></i>Distributed Systems</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#databases"><i
+                                class="bi bi-database me-1"></i>Databases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#microservices"><i
+                                class="bi bi-boxes me-1"></i>Microservices</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Master the Art of System Design</h1>
+                    <p class="lead mb-4">Dive deep into architectural patterns, scalability concepts, and best practices
+                        used by industry leaders</p>
+                    <a href="#scalability" class="btn btn-light btn-lg me-3"><i class="bi bi-book me-2"></i>Start
+                        Learning</a>
+                    <a href="#contact" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots me-2"></i>Get in
+                        Touch</a>
+                </div>
+                <div class="col-lg-6">
+                    <img src="simple system design illustration.png" alt="System Design Illustration" class="img-fluid rounded shadow topic-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scalability Section -->
+    <section id="scalability" class="content-section bg-light">
+        <div class="container">
+            <h2 class="section-heading">Scalability Fundamentals</h2>
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6">
+                    <img src="Scalability-in-Platform-Architecture.jpg" alt="Scalability Diagram" class="topic-image">
+                </div>
+                <div class="col-lg-6">
+                    <div class="topic-content">
+                        <h3 class="mb-4"><i class="bi bi-arrow-up-right-circle me-2"></i>Horizontal vs Vertical Scaling
+                        </h3>
+                        <p class="lead">Understanding different scaling approaches is crucial for system design.</p>
+                        <p>Vertical scaling (scaling up) involves adding more power to existing machines, while
+                            horizontal scaling (scaling out) involves adding more machines to handle the load. We'll
+                            explore:</p>
+                        <ul>
+                            <li><i class="bi bi-diagram-2 feature-icon"></i>Load Balancing Strategies</li>
+                            <li><i class="bi bi-grid-3x3 feature-icon"></i>Database Sharding</li>
+                            <li><i class="bi bi-lightning feature-icon"></i>Caching Mechanisms</li>
+                            <li><i class="bi bi-globe feature-icon"></i>Content Delivery Networks (CDN)</li>
+                        </ul>
+                        <a href="#" class="action-button"><i class="bi bi-arrow-right me-2"></i>Learn More About
+                            Scaling</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Distributed Systems Section -->
+    <section id="distributed" class="content-section">
+        <div class="container">
+            <h2 class="section-heading">Distributed Systems Architecture</h2>
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6">
+                    <div class="topic-content">
+                        <h3 class="mb-4"><i class="bi bi-diagram-3 me-2"></i>Building Reliable Distributed Systems</h3>
+                        <p class="lead">Distributed systems present unique challenges and opportunities.</p>
+                        <p>Learn how to design and implement robust distributed systems that can handle:</p>
+                        <ul>
+                            <li><i class="bi bi-hdd-network feature-icon"></i>Network Partitions</li>
+                            <li><i class="bi bi-check2-circle feature-icon"></i>Consistency Models</li>
+                            <li><i class="bi bi-shield-check feature-icon"></i>Fault Tolerance</li>
+                            <li><i class="bi bi-people feature-icon"></i>Distributed Consensus</li>
+                        </ul>
+                        <p>We'll explore real-world implementations like:</p>
+                        <ul>
+                            <li><i class="bi bi-lightning feature-icon"></i>Apache Kafka</li>
+                            <li><i class="bi bi-database feature-icon"></i>Apache Cassandra</li>
+                            <li><i class="bi bi-search feature-icon"></i>Elasticsearch</li>
+                        </ul>
+                        <a href="#" class="action-button"><i class="bi bi-arrow-right me-2"></i>Explore Distributed
+                            Systems</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="distributed_systems.jpg" alt="Distributed Systems" class="topic-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Databases Section -->
+    <section id="databases" class="content-section bg-light">
+        <div class="container">
+            <h2 class="section-heading">Database Design & Architecture</h2>
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6">
+                    <img src="database.png" alt="Database Architecture" class="topic-image">
+                </div>
+                <div class="col-lg-6">
+                    <div class="topic-content">
+                        <h3 class="mb-4"><i class="bi bi-database me-2"></i>Choosing the Right Database</h3>
+                        <p class="lead">Understanding different database paradigms and their use cases.</p>
+                        <div class="mb-4">
+                            <h5><i class="bi bi-table me-2"></i>SQL Databases</h5>
+                            <p>Perfect for structured data with complex relationships. Learn about:</p>
+                            <ul>
+                                <li><i class="bi bi-diagram-2 feature-icon"></i>Normalization</li>
+                                <li><i class="bi bi-sort-numeric-down feature-icon"></i>Indexing Strategies</li>
+                                <li><i class="bi bi-arrow-repeat feature-icon"></i>Transaction Management</li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <h5><i class="bi bi-collection me-2"></i>NoSQL Databases</h5>
+                            <p>Ideal for handling large-scale, unstructured data:</p>
+                            <ul>
+                                <li><i class="bi bi-file-text feature-icon"></i>Document Stores (MongoDB)</li>
+                                <li><i class="bi bi-key feature-icon"></i>Key-Value Stores (Redis)</li>
+                                <li><i class="bi bi-grid feature-icon"></i>Wide-Column Stores (Cassandra)</li>
+                            </ul>
+                        </div>
+                        <a href="#" class="action-button"><i class="bi bi-arrow-right me-2"></i>Deep Dive into
+                            Databases</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Microservices Section -->
+    <section id="microservices" class="content-section">
+        <div class="container">
+            <h2 class="section-heading">Microservices Architecture</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="topic-content">
+                        <h3 class="mb-4"><i class="bi bi-boxes me-2"></i>Building Microservices</h3>
+                        <p class="lead">Modern application architecture using microservices.</p>
+                        <p>Discover how to break down monolithic applications into scalable microservices:</p>
+                        <ul>
+                            <li><i class="bi bi-search feature-icon"></i>Service Discovery</li>
+                            <li><i class="bi bi-door-open feature-icon"></i>API Gateway Patterns</li>
+                            <li><i class="bi bi-chat-dots feature-icon"></i>Inter-service Communication</li>
+                            <li><i class="bi bi-box feature-icon"></i>Container Orchestration</li>
+                            <li><i class="bi bi-graph-up feature-icon"></i>Monitoring and Logging</li>
+                        </ul>
+                        <p>Explore tools and technologies like:</p>
+                        <ul>
+                            <li><i class="bi bi-box-seam feature-icon"></i>Docker & Kubernetes</li>
+                            <li><i class="bi bi-cloud feature-icon"></i>Spring Cloud</li>
+                            <li><i class="bi bi-diagram-3 feature-icon"></i>Service Mesh (Istio)</li>
+                        </ul>
+                        <a href="#" class="action-button"><i class="bi bi-arrow-right me-2"></i>Master Microservices</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="microservices-architecture.jpg" alt="Microservices Architecture" class="topic-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-diagram-3-fill me-2"></i>SystemDesign.io</h5>
+                    <p>Learn system design concepts from industry experts.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>Connect with me:</p>
+                    <a href="https://github.com/lakshmanbhukya" class="text-light text-decoration-none" target="_blank">
+                        <i class="bi bi-github social-icon"></i>
+                        GitHub: @lakshmanbhukya
+                    </a>
+                    <a href="https://www.linkedin.com/in/lakshmankbhukya" class="text-light text-decoration-none ms-3"
+                        target="_blank">
+                        <i class="bi bi-linkedin social-icon"></i>
+                    </a>
+                    <a href="https://x.com/lakshmanbhukya" class="text-light text-decoration-none ms-3" target="_blank">
+                        <i class="bi bi-twitter social-icon"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col text-center">
+                    <p class="mb-0">&copy; 2024 SystemDesign.io. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
